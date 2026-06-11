@@ -1,0 +1,7 @@
+name: Laptop_Price_Model
+
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    command: "python modelling.py"
