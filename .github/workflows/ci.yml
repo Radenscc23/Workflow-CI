@@ -35,8 +35,6 @@ jobs:
         run: |
           MLMODEL_FILE=$(find . -name "MLmodel" -type f | head -n 1)
 
-          echo "MLMODEL_FILE=$MLMODEL_FILE"
-
           if [ -z "$MLMODEL_FILE" ]; then
             echo "ERROR: MLmodel tidak ditemukan"
             exit 1
@@ -46,7 +44,6 @@ jobs:
           cat "$MLMODEL_FILE"
 
           MODEL_DIR=$(dirname "$MLMODEL_FILE")
-
           echo "MODEL_DIR=$MODEL_DIR" >> $GITHUB_ENV
           echo "MODEL_DIR=$MODEL_DIR"
 
@@ -60,15 +57,11 @@ jobs:
           name: model-artifacts
           path: ${{ env.MODEL_DIR }}
 
-      - name: Docker logout (clear stale credentials)
-        run: docker logout
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          registry: docker.io
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Log in to Docker Hub (manual)
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login docker.io \
+            -u "${{ secrets.DOCKER_USERNAME }}" \
+            --password-stdin
 
       - name: Build Docker Image
         run: |
