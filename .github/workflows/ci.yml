@@ -31,26 +31,40 @@ jobs:
         run: |
           mlflow run MLProject/ --env-manager=local
 
+      - name: Debug MLflow Files
+        run: |
+          echo "========== MLmodel =========="
+          find . -name MLmodel
+
+          echo "========== python_env.yaml =========="
+          find . -name python_env.yaml
+
+          echo "========== conda.yaml =========="
+          find . -name conda.yaml
+
+          echo "========== mlruns =========="
+          find . -name mlruns
+
       - name: Get Exact Model Path
         run: |
 
           MLMODEL_FILE=$(find . -name "MLmodel" -type f | head -n 1)
 
-          echo "MLmodel ditemukan di:"
-          echo "$MLMODEL_FILE"
+          echo "MLMODEL_FILE=$MLMODEL_FILE"
 
           if [ -z "$MLMODEL_FILE" ]; then
             echo "ERROR: MLmodel tidak ditemukan"
-            find . -maxdepth 6 -type d | sort
             exit 1
           fi
+
+          echo "========== ISI MLMODEL =========="
+          cat "$MLMODEL_FILE"
 
           MODEL_DIR=$(dirname "$MLMODEL_FILE")
 
           echo "MODEL_DIR=$MODEL_DIR" >> $GITHUB_ENV
 
-          echo "Model Directory:"
-          echo "$MODEL_DIR"
+          echo "MODEL_DIR=$MODEL_DIR"
 
       - name: Upload Artifact to GitHub
         uses: actions/upload-artifact@v4
